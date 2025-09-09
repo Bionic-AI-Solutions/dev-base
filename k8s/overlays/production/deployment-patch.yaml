@@ -9,6 +9,7 @@ spec:
     spec:
       containers:
       - name: dev-base
+        command: ["/startup.sh", "tail", "-f", "/dev/null"]
         env:
         - name: NODE_ENV
           value: "production"

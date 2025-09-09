@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-base
+  namespace: dev-base
+  labels:
+    app: dev-base
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dev-base
+  template:
+    metadata:
+      labels:
+        app: dev-base
+    spec:
+      imagePullSecrets:
+      - name: docker-registry-secret
+      containers:
+      - name: dev-base
+        image: docker4zerocool/dev-base:latest
+        command: ["/startup.sh"]
+        ports:
+        - containerPort: 22
+          name: ssh
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: APP_NAME
+          value: "dev-base"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      restartPolicy: Always
